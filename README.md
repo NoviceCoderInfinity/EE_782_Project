@@ -513,10 +513,10 @@ Performance vs system scale (response time in seconds):
 | 100 | 608 | 25.2s | -- | 15.8s | -37.3% |
 
 **Key Findings:**
-- Q-Learning limited to ~50 VMs (state space explosion)
-- DQN scales to 100+ VMs
-- **Performance advantage increases with scale** (29.6% → 37.3%)
-- Inference time < 15ms
+- Q-Learning limited to ~50 VMs due to tabular representation
+- DQN scales effectively to 100+ VMs using neural network approximation
+- **Performance advantage increases with scale** (29.6% → 37.3%), demonstrating DQN's superiority for large-scale deployments
+- Inference time remains < 15ms even at 100 VMs, making real-time decisions feasible
 
 ### Ablation Study (DQN)
 
