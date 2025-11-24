@@ -546,13 +546,6 @@ Impact of reward components:
 
 ---
 
-## 🤝 Contributing
-
-**Author**: Anupam  
-**GitHub**: [@NoviceCoderInfinity](https://github.com/NoviceCoderInfinity)  
-**Course**: EE 782 - Cloud Computing  
-
----
 
 **Project Status**: ✅ Phase 0 & 1 Complete | 🔨 DQN Implementation Ready
 
