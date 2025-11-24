@@ -1,12 +1,16 @@
 #!/bin/bash
 
-# Quick start script for DQN CloudSim Training
+# Quick start script for RL CloudSim Training
 # This script sets up the environment and starts training
+# Usage: ./quick_start.sh [qlearning|dqn]
 
 set -e
 
+ALGORITHM=${1:-dqn}
+
 echo "============================================"
-echo "DQN CloudSim Training Quick Start"
+echo "RL CloudSim Training Quick Start"
+echo "Algorithm: $ALGORITHM"
 echo "============================================"
 
 # Set Java environment
@@ -41,18 +45,35 @@ conda activate ee782 || {
 }
 
 echo ""
-echo "Step 5: Starting DQN training..."
-cd algorithms/rl/dqn
-python train_dqn.py --episodes 100 --save-freq 25 --log-freq 10
+echo "Step 5: Starting $ALGORITHM training..."
+cd algorithms/rl
 
-echo ""
-echo "============================================"
-echo "Training completed!"
-echo "============================================"
-echo ""
-echo "Next steps:"
-echo "1. Evaluate model: python test_dqn.py --model-path ../../../results/models/dqn_cloudsim_*.pth"
-echo "2. Visualize results: python ../../../utils/visualization.py --log-path ../../../results/models/dqn_cloudsim_*_log.json"
+if [ "$ALGORITHM" = "qlearning" ]; then
+    cd qlearning
+    python train_qlearning.py --episodes 100 --lr 0.1 --gamma 0.9
+    
+    echo ""
+    echo "============================================"
+    echo "Q-Learning Training completed!"
+    echo "============================================"
+    echo ""
+    echo "Next steps:"
+    echo "1. Evaluate model: python test_qlearning.py --model ../../../results/qlearning/models/qlearning_final.pkl --episodes 100"
+    echo "2. Check results in: results/qlearning/logs/"
+else
+    cd dqn
+    python train_dqn.py --episodes 100 --save-freq 25 --log-freq 10
+    
+    echo ""
+    echo "============================================"
+    echo "DQN Training completed!"
+    echo "============================================"
+    echo ""
+    echo "Next steps:"
+    echo "1. Evaluate model: python test_dqn.py --model-path ../../../results/models/dqn_cloudsim_*.pth"
+    echo "2. Visualize results: python ../../../utils/visualization.py --log-path ../../../results/models/dqn_cloudsim_*_log.json"
+fi
+
 echo ""
 echo "Stopping CloudSim server..."
 kill $SERVER_PID 2>/dev/null || true

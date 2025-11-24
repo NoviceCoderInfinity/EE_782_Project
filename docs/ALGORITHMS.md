@@ -143,14 +143,15 @@ where:
 
 ---
 
-## Q-Learning Implementation (Planned)
+## Q-Learning Implementation
 
 ### Q-Table Structure
 
 ```
-State Space: Discretized VM loads (e.g., Low/Medium/High per VM)
+State Space: Discretized VM loads (LOW/MED/HIGH per VM + cloudlet size)
 Action Space: 20 VMs
-Q-Table: Dictionary mapping (state, action) → Q-value
+Q-Table: Dictionary (defaultdict) mapping (state, action) → Q-value
+Storage: Pickle format for persistence
 ```
 
 ### Update Rule
@@ -161,23 +162,95 @@ Q(s,a) ← Q(s,a) + α[r + γ max_a' Q(s',a') - Q(s,a)]
 Parameters:
 - α (learning rate) = 0.1
 - γ (discount) = 0.9
-- ε (epsilon) = 0.1 (for epsilon-greedy)
+- ε_start (epsilon) = 1.0
+- ε_end = 0.01
+- ε_decay = 0.995
+```
+
+### Training Algorithm
+
+```
+for episode in range(num_episodes):
+    state = env.reset()
+    
+    for step in range(max_steps):
+        # Discretize continuous state
+        discrete_state = discretize_state(state)
+        
+        # Select action using epsilon-greedy
+        if random() < epsilon:
+            action = random_action()
+        else:
+            action = argmax(Q_table[discrete_state])
+        
+        # Execute action
+        next_state, reward, done = env.step(action)
+        discrete_next_state = discretize_state(next_state)
+        
+        # Q-Learning update
+        current_q = Q_table[discrete_state][action]
+        max_next_q = max(Q_table[discrete_next_state])
+        new_q = current_q + alpha * (reward + gamma * max_next_q - current_q)
+        Q_table[discrete_state][action] = new_q
+        
+        # Decay epsilon
+        epsilon *= epsilon_decay
+        
+        state = next_state
 ```
 
 ### State Discretization
 
 ```python
-def discretize_state(vm_loads):
+def discretize_state(state):
     discrete_state = []
-    for load in vm_loads:
-        if load < 0.3:
+    
+    # Discretize VM loads (first 20 elements)
+    for i in range(num_vms):
+        load = state[i]
+        if load < 0.33:
             discrete_state.append('LOW')
-        elif load < 0.7:
-            discrete_state.append('MEDIUM')
+        elif load < 0.67:
+            discrete_state.append('MED')
         else:
             discrete_state.append('HIGH')
+    
+    # Discretize cloudlet length (last element)
+    cloudlet_length = state[-1]
+    if cloudlet_length < 0.33:
+        discrete_state.append('SMALL')
+    elif cloudlet_length < 0.67:
+        discrete_state.append('MEDIUM')
+    else:
+        discrete_state.append('LARGE')
+    
     return tuple(discrete_state)
 ```
+
+### Key Hyperparameters
+
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| Learning Rate (α) | 0.1 | Standard for tabular Q-learning |
+| Gamma (γ) | 0.9 | Moderate discounting |
+| Epsilon Start | 1.0 | Full exploration initially |
+| Epsilon End | 0.01 | Minimal exploration |
+| Epsilon Decay | 0.995 | Gradual transition |
+| Discretization Bins | 3 | Balance expressiveness vs. table size |
+
+### Advantages
+
+- **Simple**: No neural networks, direct Q-value storage
+- **Interpretable**: Can inspect Q-values directly
+- **Fast training**: No backpropagation overhead
+- **Guaranteed convergence**: Under certain conditions
+
+### Limitations
+
+- **Curse of dimensionality**: State space grows exponentially
+- **Discretization loss**: May lose important state distinctions
+- **Memory usage**: Large state spaces need large tables
+- **Generalization**: No generalization to unseen states
 
 ---
 

@@ -243,7 +243,142 @@ private double calculateReward(Cloudlet cloudlet, Vm vm) {
 
 ---
 
+### QLearningAgent
+
+Tabular Q-Learning agent for task scheduling.
+
+```python
+from algorithms.rl.qlearning.qlearning_agent import QLearningAgent
+
+# Initialize agent
+agent = QLearningAgent(
+    num_vms=20,
+    learning_rate=0.1,
+    gamma=0.9,
+    epsilon_start=1.0,
+    epsilon_end=0.01,
+    epsilon_decay=0.995,
+    discretization_bins=3
+)
+
+# Select action
+action = agent.select_action(state, training=True)
+
+# Update Q-table
+agent.update(state, action, reward, next_state, done)
+
+# Save/Load Q-table
+agent.save('qtable.pkl')
+agent.load('qtable.pkl')
+
+# Get statistics
+stats = agent.get_statistics()
+```
+
+#### Methods
+
+##### `__init__(...)`
+Initialize the Q-Learning agent.
+
+**Parameters**:
+- `num_vms` (int): Number of VMs (action space size)
+- `learning_rate` (float): Learning rate (alpha)
+- `gamma` (float): Discount factor
+- `epsilon_start` (float): Initial exploration rate
+- `epsilon_end` (float): Minimum exploration rate
+- `epsilon_decay` (float): Decay rate for epsilon
+- `discretization_bins` (int): Number of bins for state discretization
+
+##### `discretize_state(state)`
+Discretize continuous state into bins.
+
+**Parameters**:
+- `state` (np.ndarray): Continuous state vector
+
+**Returns**:
+- `discrete_state` (tuple): Discretized state (hashable)
+
+##### `select_action(state, training=True)`
+Select action using epsilon-greedy policy.
+
+**Parameters**:
+- `state` (np.ndarray): Current state
+- `training` (bool): Whether in training mode
+
+**Returns**:
+- `action` (int): Selected action
+
+##### `update(state, action, reward, next_state, done)`
+Update Q-value using Q-learning update rule.
+
+##### `get_statistics()`
+Get agent statistics.
+
+**Returns**:
+- `stats` (dict): Dictionary with num_states, total_updates, epsilon, etc.
+
+##### `save(path)`
+Save Q-table to file.
+
+##### `load(path)`
+Load Q-table from file.
+
+---
+
 ## Training Scripts
+
+### train_qlearning.py
+
+Train a Q-Learning agent.
+
+```bash
+python train_qlearning.py [OPTIONS]
+```
+
+**Options**:
+- `--episodes` (int): Number of training episodes [default: 500]
+- `--lr` (float): Learning rate [default: 0.1]
+- `--gamma` (float): Discount factor [default: 0.9]
+- `--epsilon-start` (float): Initial epsilon [default: 1.0]
+- `--epsilon-end` (float): Final epsilon [default: 0.01]
+- `--epsilon-decay` (float): Epsilon decay rate [default: 0.995]
+- `--bins` (int): Discretization bins [default: 3]
+- `--results-dir` (str): Results directory [default: results/qlearning]
+
+**Example**:
+```bash
+python train_qlearning.py --episodes 500 --lr 0.1 --gamma 0.9 --bins 3
+```
+
+**Output Files**:
+- `results/qlearning/models/qlearning_final.pkl`: Final Q-table
+- `results/qlearning/models/qlearning_ep*.pkl`: Checkpoints
+- `results/qlearning/logs/training_log_TIMESTAMP.json`: Training log
+
+---
+
+### test_qlearning.py
+
+Evaluate a trained Q-Learning agent.
+
+```bash
+python test_qlearning.py --model MODEL_PATH [OPTIONS]
+```
+
+**Options**:
+- `--model` (str): Path to trained Q-table [required]
+- `--episodes` (int): Number of evaluation episodes [default: 100]
+- `--results-dir` (str): Results directory [default: results/qlearning]
+
+**Example**:
+```bash
+python test_qlearning.py --model results/qlearning/models/qlearning_final.pkl --episodes 100
+```
+
+**Output Files**:
+- `results/qlearning/logs/evaluation_TIMESTAMP.json`: Evaluation results
+
+---
 
 ### train_dqn.py
 

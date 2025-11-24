@@ -113,10 +113,13 @@ EE_782_Project/
 │   │   │   ├── train_dqn.py           # Training script
 │   │   │   ├── test_dqn.py            # Evaluation script
 │   │   │   └── README.md              # DQN documentation
-│   │   ├── ppo/                        # Proximal Policy Optimization
-│   │   │   └── (TODO: PPO implementation)
-│   │   └── qlearning/                  # Tabular Q-Learning
-│   │       └── (TODO: Q-Learning baseline)
+│   │   ├── qlearning/                  # Tabular Q-Learning
+│   │   │   ├── qlearning_agent.py     # Q-Learning agent implementation
+│   │   │   ├── train_qlearning.py     # Training script
+│   │   │   ├── test_qlearning.py      # Evaluation script
+│   │   │   └── README.md              # Q-Learning documentation
+│   │   └── ppo/                        # Proximal Policy Optimization
+│   │       └── (TODO: PPO implementation)
 │   │
 │   ├── ml/                             # Machine Learning approaches
 │   │   └── (TODO: Decision Trees, Random Forest, etc.)
@@ -157,7 +160,41 @@ EE_782_Project/
 
 ## 🤖 Algorithms Implemented
 
-### 1. Deep Q-Network (DQN) ✅
+### 1. Q-Learning (Tabular) ✅
+
+**Status**: Implemented and Ready
+
+**Key Features**:
+- Tabular Q-table for state-action values
+- State discretization (LOW/MED/HIGH bins)
+- Epsilon-greedy exploration (1.0 → 0.01, decay=0.995)
+- Off-policy learning
+- Direct policy learning without neural networks
+
+**State Space**: Discretized state representation
+- VM loads: LOW (<0.33), MED (0.33-0.67), HIGH (>0.67)
+- Cloudlet length: SMALL, MEDIUM, LARGE
+- Manageable state space via binning
+
+**Action Space**: Discrete(20)
+- Each action represents selecting a VM for task assignment
+
+**Update Rule**:
+```python
+Q(s,a) ← Q(s,a) + α[r + γ max Q(s',a') - Q(s,a)]
+```
+
+**Hyperparameters**:
+```python
+learning_rate = 0.1
+gamma = 0.9
+epsilon_start = 1.0
+epsilon_end = 0.01
+epsilon_decay = 0.995
+discretization_bins = 3
+```
+
+### 2. Deep Q-Network (DQN) ✅
 
 **Status**: Implemented and Ready
 
@@ -192,11 +229,7 @@ batch_size = 64
 target_update_freq = 10
 ```
 
-### 2. Proximal Policy Optimization (PPO) 🔨
-
-**Status**: Planned
-
-### 3. Q-Learning 🔨
+### 3. Proximal Policy Optimization (PPO) 🔨
 
 **Status**: Planned
 
@@ -270,17 +303,26 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 mvn exec:java -Dexec.mainClass="org.ee782.CloudSimSocketServer"
 ```
 
-**Terminal 2: Train DQN**
+**Terminal 2: Train Q-Learning**
 ```bash
 conda activate ee782
-cd algorithms/rl/dqn
-python train_dqn.py --episodes 500 --save-freq 50 --log-freq 10
+python algorithms/rl/qlearning/train_qlearning.py --episodes 500 --lr 0.1 --gamma 0.9
 ```
 
-**Terminal 3: Evaluate Model**
+**Terminal 2 (Alternative): Train DQN**
 ```bash
-cd algorithms/rl/dqn
-python test_dqn.py --model-path ../../../results/models/dqn_cloudsim_*.pth --episodes 10
+conda activate ee782
+python algorithms/rl/dqn/train_dqn.py --episodes 500 --save-freq 50 --log-freq 10
+```
+
+**Terminal 3: Evaluate Q-Learning Model**
+```bash
+python algorithms/rl/qlearning/test_qlearning.py --model results/qlearning/models/qlearning_final.pkl --episodes 100
+```
+
+**Terminal 3 (Alternative): Evaluate DQN Model**
+```bash
+python algorithms/rl/dqn/test_dqn.py --model-path results/models/dqn_cloudsim_*.pth --episodes 10
 ```
 
 **Visualize Results**
@@ -305,12 +347,19 @@ python visualization.py --log-path ../results/models/dqn_cloudsim_*_log.json --s
 
 ```
 results/
-├── models/
-│   ├── dqn_cloudsim_20251124_143022.pth         # Model checkpoint
-│   ├── dqn_cloudsim_20251124_143022_log.json    # Training log
-│   └── dqn_cloudsim_20251124_143022_eval_results.json
-├── logs/
-│   └── cloudsim_server.log
+├── qlearning/
+│   ├── models/
+│   │   ├── qlearning_final.pkl                   # Final Q-table
+│   │   └── qlearning_ep*.pkl                     # Checkpoints
+│   └── logs/
+│       ├── training_log_*.json
+│       └── evaluation_*.json
+├── dqn/
+│   ├── models/
+│   │   ├── dqn_cloudsim_*.pth                    # DQN checkpoints
+│   │   └── dqn_cloudsim_*_log.json
+│   └── logs/
+│       └── evaluation_*.json
 └── plots/
     ├── training_results.png
     └── evaluation_results.png
@@ -327,7 +376,7 @@ results/
 
 ### Phase 3: Additional Algorithms
 - [ ] PPO implementation
-- [ ] Q-Learning baseline
+- [x] Q-Learning baseline
 - [ ] A3C/A2C variants
 
 ### Phase 4: Heuristic Baselines
