@@ -536,30 +536,6 @@ Impact of reward components:
 
 ---
 
-## 🚧 Future Work
-
-### Phase 2: Data Pipeline
-- [ ] Synthetic workload generator
-- [ ] Advanced trace analysis tools
-
-### Phase 3: Additional Algorithms
-- [x] PPO implementation
-- [x] Q-Learning baseline
-- [ ] A3C/A2C variants
-
-### Phase 4: Heuristic Baselines
-- [x] Round Robin
-- [x] Least Connection
-- [x] Weighted Round-Robin
-- [x] Genetic Algorithm
-- [x] Ant Colony Optimization
-
-### Phase 5: Evaluation
-- [x] Comprehensive comparative study
-- [x] Statistical analysis
-- [ ] Research paper
-
----
 
 ## 📚 References
 
