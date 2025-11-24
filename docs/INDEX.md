@@ -173,10 +173,6 @@ After training:
 - PyTorch: https://pytorch.org/
 - Gymnasium: https://gymnasium.farama.org/
 
-### Datasets
-- Google Cluster Trace: https://github.com/google/cluster-data
-- Alibaba Cluster Trace: https://github.com/alibaba/clusterdata
-
 ---
 
 ## 📞 Support

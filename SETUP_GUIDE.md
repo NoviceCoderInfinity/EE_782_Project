@@ -152,8 +152,7 @@ Edit `simulation/configs/` for custom configurations (TODO):
 ## 📝 Next Steps
 
 ### Phase 2: Data Pipeline
-- [ ] Google Cluster Trace parser
-- [ ] Alibaba Cluster Trace parser
+- [ ] Trace data parser implementation
 - [ ] Synthetic workload generator
 
 ### Phase 3: Additional RL Algorithms

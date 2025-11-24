@@ -25,7 +25,6 @@ This project implements and compares multiple task scheduling algorithms for clo
 - Implement DRL-based task scheduling algorithms (DQN, PPO, Q-Learning)
 - Develop ML-based scheduling approaches
 - Compare with traditional heuristic algorithms (Round Robin, Genetic Algorithm, ACO)
-- Evaluate performance using real-world traces (Google Cluster, Alibaba)
 - Multi-objective optimization: response time, energy efficiency, SLA compliance
 
 ### Technologies Used
@@ -519,24 +518,6 @@ Performance vs system scale (response time in seconds):
 - **Performance advantage increases with scale** (29.6% → 37.3%)
 - Inference time < 15ms
 
-### Alibaba Cluster Trace Validation
-
-Real-world validation using 24-hour production traces:
-
-| Algorithm | Avg Response | P95 Latency | Utilization | SLA |
-|-----------|--------------|-------------|-------------|-----|
-| Round-Robin | 18.7s | 42.3s | 61.2% | 79.8% |
-| Least Conn. | 17.2s | 38.9s | 64.7% | 82.6% |
-| GA | 15.8s | 35.2s | 68.3% | 86.1% |
-| **Q-Learning** | **13.6s** | **29.8s** | **71.5%** | **91.3%** |
-| **DQN** | **12.9s** | **27.5s** | **73.2%** | **93.7%** |
-
-**Key Findings:**
-- RL generalizes well to real-world traces
-- DQN achieves **31.0% improvement** on production workload
-- P95 latency reduced **35.0%**
-- SLA improved **13.9 percentage points**
-
 ### Ablation Study (DQN)
 
 Impact of reward components:
@@ -558,9 +539,8 @@ Impact of reward components:
 ## 🚧 Future Work
 
 ### Phase 2: Data Pipeline
-- [ ] Google Cluster Trace parser
-- [x] Alibaba Cluster Trace validation
 - [ ] Synthetic workload generator
+- [ ] Advanced trace analysis tools
 
 ### Phase 3: Additional Algorithms
 - [x] PPO implementation
